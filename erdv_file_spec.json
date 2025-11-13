@@ -1,0 +1,169 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/schemas/erd-model.schema.json",
+  "title": "ERD Model",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["metadata", "server_info", "database", "schemas", "entities", "relationships", "subject_areas"],
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["model_name"],
+      "properties": {
+        "model_name": { "type": "string", "minLength": 1 }
+      }
+    },
+    "server_info": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["target_server_name", "version"],
+      "properties": {
+        "target_server_name": { "type": "string", "minLength": 1 },
+        "version": { "type": "string", "minLength": 1 }
+      }
+    },
+    "database": { "type": "string", "minLength": 1 },
+    "schemas": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "entities": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/entity" }
+    },
+    "relationships": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/relationship" }
+    },
+    "subject_areas": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/subject_area" }
+    }
+  },
+
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "pattern": "^[A-Za-z_][A-Za-z0-9_]*$",
+      "description": "Simple identifier: start with letter/underscore; then letters, digits, underscores."
+    },
+
+    "tsqlDataType": {
+      "type": "string",
+      "description": "Common SQL Server types (normalized to lowercase recommended).",
+      "pattern": "^(bigint|int|smallint|tinyint|bit|decimal\\(\\d+,\\d+\\)|numeric\\(\\d+,\\d+\\)|money|smallmoney|float|real|date|time\\(\\d+\\)|datetime|smalldatetime|datetime2\\(\\d+\\)|datetimeoffset\\(\\d+\\)|char\\(\\d+\\)|varchar\\(\\d+\\)|nchar\\(\\d+\\)|nvarchar\\(\\d+\\)|text|ntext|binary\\(\\d+\\)|varbinary\\(\\d+\\)|image|uniqueidentifier|xml|timestamp|rowversion)$"
+    },
+
+    "column": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "data_type", "nullable", "order"],
+      "properties": {
+        "name": { "$ref": "#/$defs/identifier" },
+        "data_type": { "$ref": "#/$defs/tsqlDataType" },
+        "nullable": { "type": "boolean" },
+        "order": { "type": "integer", "minimum": 1 }
+      }
+    },
+
+    "entity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "schema_name", "columns", "primary_key_columns"],
+      "properties": {
+        "name": { "$ref": "#/$defs/identifier" },
+        "schema_name": { "type": "string", "minLength": 1, "description": "Ideally matches an entry in root.schemas (cannot be enforced by JSON Schema alone)." },
+        "columns": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/column" }
+        },
+        "primary_key_columns": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/identifier" },
+          "description": "Column names that must exist in columns[].name (cross-check not enforceable in plain JSON Schema)."
+        }
+      }
+    },
+
+    "cardinality": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["notation", "description", "min_cardinality", "max_cardinality"],
+      "properties": {
+        "notation": {
+          "type": "string",
+          "pattern": "^(0\\.\\.(1|N)|1\\.\\.(1|N))$",
+          "description": "Examples: 0..1, 1..1, 0..N, 1..N"
+        },
+        "description": { "type": "string" },
+        "min_cardinality": { "type": "integer", "minimum": 0 },
+        "max_cardinality": {
+          "description": "Maximum cardinality (use integer or 'N').",
+          "anyOf": [
+            { "type": "integer", "minimum": 1 },
+            { "type": "string", "enum": ["N"] }
+          ]
+        }
+      }
+    },
+
+    "relationship": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "isLogical",
+        "parent_entity_name",
+        "parent_entity_columns",
+        "child_entity_name",
+        "child_entity_columns",
+        "relationship_type",
+        "cardinality",
+        "verb_phrase",
+        "inverse_phrase"
+      ],
+      "properties": {
+        "name": { "$ref": "#/$defs/identifier" },
+        "isLogical": { "type": "boolean" },
+        "parent_entity_name": { "$ref": "#/$defs/identifier" },
+        "parent_entity_columns": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/identifier" }
+        },
+        "child_entity_name": { "$ref": "#/$defs/identifier" },
+        "child_entity_columns": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/identifier" }
+        },
+        "relationship_type": { "type": "string", "enum": ["Identifying", "Non-Identifying"] },
+        "cardinality": { "$ref": "#/$defs/cardinality" },
+        "verb_phrase": { "type": "string" },
+        "inverse_phrase": { "type": "string" }
+      },
+      "description": "Note: JSON Schema cannot ensure the named entities/columns actually exist—run an additional semantic check."
+    },
+
+    "subject_area": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "entity_count", "entity_names"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "entity_count": { "type": "integer", "minimum": 0, "description": "Should equal the length of entity_names (cannot be enforced directly)." },
+        "entity_names": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/identifier" }
+        }
+      }
+    }
+  },
+
+  "description": "Schema for ERD model files for a simple ERD viewer."
+}

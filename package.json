@@ -1,0 +1,18 @@
+{
+  "name": "erd-viewer",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "ERD Viewer - A visualization tool for exploring relational data models",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": ["erd", "entity-relationship-diagram", "database", "visualization"],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "vite": "^7.2.2"
+  }
+}

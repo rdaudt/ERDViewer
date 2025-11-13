@@ -1,0 +1,238 @@
+/**
+ * ERD Viewer - Global Styles
+ * Minimal, clean styling for the application foundation
+ */
+
+/* ========================================
+   CSS Variables (Theme Colors)
+   ======================================== */
+:root {
+  --color-primary: #2563eb;
+  --color-primary-dark: #1e40af;
+  --color-secondary: #64748b;
+  --color-background: #f8fafc;
+  --color-surface: #ffffff;
+  --color-border: #e2e8f0;
+  --color-text-primary: #1e293b;
+  --color-text-secondary: #64748b;
+  --color-text-muted: #94a3b8;
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 1.5rem;
+  --spacing-lg: 2rem;
+  --spacing-xl: 3rem;
+  --border-radius: 8px;
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+}
+
+/* ========================================
+   CSS Reset / Normalize
+   ======================================== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-family);
+  color: var(--color-text-primary);
+  background-color: var(--color-background);
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ========================================
+   Header Styles
+   ======================================== */
+.app-header {
+  background-color: var(--color-surface);
+  border-bottom: 2px solid var(--color-border);
+  padding: var(--spacing-md) var(--spacing-lg);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.app-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.app-header .subtitle {
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+  font-weight: 400;
+}
+
+/* ========================================
+   Main Content Area
+   ======================================== */
+.app-main {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-lg);
+  max-width: 1600px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* ========================================
+   Upload Section
+   ======================================== */
+.upload-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.upload-placeholder {
+  background-color: var(--color-surface);
+  border: 2px dashed var(--color-border);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-xl);
+  text-align: center;
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: border-color 0.3s ease;
+}
+
+.upload-placeholder:hover {
+  border-color: var(--color-primary);
+}
+
+.upload-icon {
+  font-size: 4rem;
+  margin-bottom: var(--spacing-md);
+}
+
+.upload-placeholder h2 {
+  font-size: 1.5rem;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.upload-placeholder p {
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.upload-hint {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+/* ========================================
+   Canvas Section
+   ======================================== */
+.canvas-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.canvas-placeholder {
+  background-color: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-xl);
+  text-align: center;
+  min-height: 600px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.canvas-icon {
+  font-size: 5rem;
+  margin-bottom: var(--spacing-md);
+}
+
+.canvas-placeholder h2 {
+  font-size: 1.75rem;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.canvas-placeholder p {
+  color: var(--color-text-secondary);
+  font-size: 1.125rem;
+}
+
+/* ========================================
+   Footer Styles
+   ======================================== */
+.app-footer {
+  background-color: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  padding: var(--spacing-md) var(--spacing-lg);
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+}
+
+/* ========================================
+   Responsive Layout
+   ======================================== */
+@media (max-width: 1024px) {
+  .app-main {
+    grid-template-columns: 1fr;
+  }
+
+  .upload-section,
+  .canvas-section {
+    min-height: auto;
+  }
+
+  .upload-placeholder {
+    min-height: 250px;
+  }
+
+  .canvas-placeholder {
+    min-height: 400px;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .app-header .subtitle {
+    font-size: 0.875rem;
+  }
+
+  .app-main {
+    padding: var(--spacing-sm);
+    gap: var(--spacing-sm);
+  }
+
+  .upload-placeholder,
+  .canvas-placeholder {
+    padding: var(--spacing-lg);
+  }
+
+  .upload-icon {
+    font-size: 3rem;
+  }
+
+  .canvas-icon {
+    font-size: 4rem;
+  }
+}
