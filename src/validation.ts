@@ -38,10 +38,13 @@ export async function initValidator(): Promise<void> {
     const schema = await response.json();
 
     // Initialize ajv with strict mode and all errors
+    // validateSchema: false prevents ajv from trying to validate the schema itself
+    // against the JSON Schema Draft 2020-12 meta-schema
     validator = new Ajv({
       strict: true,
       allErrors: true,
       verbose: true,
+      validateSchema: false,
     });
 
     // Add format validators
