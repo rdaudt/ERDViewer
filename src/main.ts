@@ -5,6 +5,8 @@
  */
 
 import './styles.css';
+import { initValidator } from './validation';
+import { initFileUpload } from './fileUpload';
 
 /**
  * Check if the browser supports required modern features.
@@ -61,24 +63,35 @@ function checkBrowserCompatibility(): boolean {
 /**
  * Initialize the application.
  */
-function initializeApp(): void {
+async function initializeApp(): Promise<void> {
   console.log('ERD Viewer initialized successfully');
   console.log('Version: 1.0.0');
   console.log('Build tool: Vite');
   console.log('Language: TypeScript');
 
-  // Log that the application is ready
-  const uploadSection = document.getElementById('upload-section');
-  const canvasSection = document.getElementById('canvas-section');
+  try {
+    // Initialize validator first
+    await initValidator();
+    console.log('Validator ready');
 
-  if (uploadSection && canvasSection) {
-    console.log('UI sections loaded:', {
-      uploadSection: uploadSection.classList.contains('upload-section'),
-      canvasSection: canvasSection.classList.contains('canvas-section'),
-    });
+    // Initialize file upload functionality
+    initFileUpload();
+    console.log('File upload ready');
+  } catch (error) {
+    console.error('Initialization error:', error);
+
+    // Display error to user
+    const uploadSection = document.getElementById('upload-section');
+    if (uploadSection) {
+      uploadSection.innerHTML = `
+        <div style="padding: 2rem; text-align: center; color: #ef4444;">
+          <h3>Initialization Error</h3>
+          <p>${error instanceof Error ? error.message : 'Failed to initialize application'}</p>
+          <p style="font-size: 0.875rem; color: #64748b;">Please refresh the page or check the console for details.</p>
+        </div>
+      `;
+    }
   }
-
-  // Future: Add event listeners for file upload, canvas interactions, etc.
 }
 
 /**

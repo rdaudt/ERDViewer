@@ -27,3 +27,7 @@ Thumbs.db
 # Project-specific files (not part of codebase)
 data_model_example.yaml
 requirements.*
+
+# Test files
+test_*.erdv
+test_*.json

@@ -98,7 +98,8 @@ body {
   flex-direction: column;
 }
 
-.upload-placeholder {
+/* Upload Zone (drag-drop) */
+.upload-zone {
   background-color: var(--color-surface);
   border: 2px dashed var(--color-border);
   border-radius: var(--border-radius);
@@ -109,11 +110,20 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  transition: border-color 0.3s ease;
+  transition: all 0.3s ease;
+  cursor: pointer;
 }
 
-.upload-placeholder:hover {
+.upload-zone:hover {
   border-color: var(--color-primary);
+  background-color: #f0f7ff;
+}
+
+.upload-zone.drag-over {
+  border-color: var(--color-primary);
+  background-color: #e0f2fe;
+  border-style: solid;
+  transform: scale(1.02);
 }
 
 .upload-icon {
@@ -121,21 +131,173 @@ body {
   margin-bottom: var(--spacing-md);
 }
 
-.upload-placeholder h2 {
+.upload-zone h2 {
   font-size: 1.5rem;
   color: var(--color-text-primary);
   margin-bottom: var(--spacing-sm);
 }
 
-.upload-placeholder p {
+.upload-zone p {
   color: var(--color-text-secondary);
-  margin-bottom: var(--spacing-xs);
+  margin-bottom: var(--spacing-sm);
 }
 
 .upload-hint {
   font-size: 0.875rem;
   color: var(--color-text-muted);
   font-style: italic;
+  margin-top: var(--spacing-sm);
+}
+
+/* Buttons */
+.button-primary,
+.button-secondary {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  font-family: inherit;
+}
+
+.button-primary {
+  background-color: var(--color-primary);
+  color: white;
+  margin: var(--spacing-sm) 0;
+}
+
+.button-primary:hover {
+  background-color: var(--color-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.button-primary:disabled {
+  background-color: var(--color-border);
+  cursor: not-allowed;
+  transform: none;
+}
+
+.button-secondary {
+  background-color: transparent;
+  color: var(--color-primary);
+  border: 2px solid var(--color-primary);
+}
+
+.button-secondary:hover {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+/* Loading Indicator */
+.loading-indicator {
+  text-align: center;
+  padding: var(--spacing-xl);
+}
+
+.spinner {
+  border: 4px solid var(--color-border);
+  border-top: 4px solid var(--color-primary);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto var(--spacing-md);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-indicator p {
+  color: var(--color-text-secondary);
+  font-size: 1rem;
+}
+
+/* Success State */
+.upload-success {
+  background-color: var(--color-surface);
+  border: 2px solid #10b981;
+  border-radius: var(--border-radius);
+  padding: var(--spacing-lg);
+  text-align: center;
+}
+
+.upload-success h3 {
+  color: #10b981;
+  font-size: 1.5rem;
+  margin-bottom: var(--spacing-md);
+}
+
+.metadata-display {
+  background-color: var(--color-background);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-md);
+  margin: var(--spacing-md) 0;
+  text-align: left;
+}
+
+.metadata-display p {
+  margin-bottom: var(--spacing-xs);
+  color: var(--color-text-primary);
+}
+
+.metadata-display strong {
+  color: var(--color-text-secondary);
+  min-width: 120px;
+  display: inline-block;
+}
+
+/* Error State */
+.upload-errors {
+  background-color: var(--color-surface);
+  border: 2px solid #ef4444;
+  border-radius: var(--border-radius);
+  padding: var(--spacing-lg);
+}
+
+.upload-errors h3 {
+  color: #ef4444;
+  font-size: 1.5rem;
+  margin-bottom: var(--spacing-md);
+  text-align: center;
+}
+
+.error-list {
+  max-height: 400px;
+  overflow-y: auto;
+  margin-bottom: var(--spacing-md);
+}
+
+.error-messages {
+  text-align: left;
+}
+
+.error-title {
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.error-item {
+  background-color: #fef2f2;
+  border-left: 4px solid #ef4444;
+  padding: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.875rem;
+  color: #991b1b;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  border-radius: 4px;
+}
+
+.upload-errors button {
+  display: block;
+  margin: var(--spacing-md) auto 0;
 }
 
 /* ========================================
@@ -200,7 +362,7 @@ body {
     min-height: auto;
   }
 
-  .upload-placeholder {
+  .upload-zone {
     min-height: 250px;
   }
 
@@ -223,7 +385,7 @@ body {
     gap: var(--spacing-sm);
   }
 
-  .upload-placeholder,
+  .upload-zone,
   .canvas-placeholder {
     padding: var(--spacing-lg);
   }

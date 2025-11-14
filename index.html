@@ -16,13 +16,41 @@
 
   <!-- Main Content Area -->
   <main class="app-main">
-    <!-- File Upload Placeholder -->
+    <!-- File Upload Section -->
     <section class="upload-section" id="upload-section">
-      <div class="upload-placeholder">
+      <!-- Upload Zone (drag-drop) -->
+      <div class="upload-zone" id="upload-zone">
         <p class="upload-icon">📁</p>
         <h2>Upload .erdv File</h2>
-        <p>File upload functionality will be implemented in a future update</p>
-        <p class="upload-hint">Supported format: .erdv (JSON)</p>
+        <p>Drag and drop your file here, or click to browse</p>
+        <input type="file" id="file-input" accept=".erdv,.json" hidden aria-label="File upload input">
+        <button id="upload-button" class="button-primary">Select File</button>
+        <p class="upload-hint">Supported formats: .erdv, .json</p>
+      </div>
+
+      <!-- Loading Indicator -->
+      <div class="loading-indicator" id="loading-indicator" hidden>
+        <div class="spinner"></div>
+        <p>Validating file...</p>
+      </div>
+
+      <!-- Success State -->
+      <div class="upload-success" id="upload-success" hidden>
+        <h3>✓ File Loaded Successfully</h3>
+        <div class="metadata-display">
+          <p><strong>Model:</strong> <span id="model-name">-</span></p>
+          <p><strong>Database:</strong> <span id="database-name">-</span></p>
+          <p><strong>Entities:</strong> <span id="entity-count">0</span></p>
+          <p><strong>Relationships:</strong> <span id="relationship-count">0</span></p>
+        </div>
+        <button id="upload-another" class="button-secondary">Upload Different File</button>
+      </div>
+
+      <!-- Error State -->
+      <div class="upload-errors" id="upload-errors" hidden>
+        <h3>⚠ Validation Errors</h3>
+        <div class="error-list" id="error-list"></div>
+        <button id="try-again" class="button-secondary">Try Again</button>
       </div>
     </section>
 
