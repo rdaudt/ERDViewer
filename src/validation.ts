@@ -26,9 +26,9 @@ export interface ValidationResult {
  */
 export async function initValidator(): Promise<void> {
   try {
-    // Fetch the schema file from Google Drive (public access)
-    // File ID: 1gtBdvBtPkQ5pMfwyQk_9TfJ5X6ulGKPD
-    const schemaUrl = 'https://drive.google.com/uc?export=download&id=1gtBdvBtPkQ5pMfwyQk_9TfJ5X6ulGKPD';
+    // Fetch the schema file from GitHub raw content
+    // This provides reliable CORS-enabled access to the public schema file
+    const schemaUrl = 'https://raw.githubusercontent.com/rdaudt/ERDViewer/main/erdv_file_spec.json';
 
     const response = await fetch(schemaUrl);
     if (!response.ok) {
