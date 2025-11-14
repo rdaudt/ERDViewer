@@ -26,8 +26,11 @@ export interface ValidationResult {
  */
 export async function initValidator(): Promise<void> {
   try {
-    // Fetch the schema file
-    const response = await fetch('/erdv_file_spec.json');
+    // Fetch the schema file from Google Drive (public access)
+    // File ID: 1gtBdvBtPkQ5pMfwyQk_9TfJ5X6ulGKPD
+    const schemaUrl = 'https://drive.google.com/uc?export=download&id=1gtBdvBtPkQ5pMfwyQk_9TfJ5X6ulGKPD';
+
+    const response = await fetch(schemaUrl);
     if (!response.ok) {
       throw new Error(`Failed to load schema: ${response.statusText}`);
     }
@@ -52,7 +55,7 @@ export async function initValidator(): Promise<void> {
   } catch (error) {
     console.error('Failed to initialize validator:', error);
     throw new Error(
-      'Could not load validation schema. Please check that erdv_file_spec.json is available.'
+      'Could not load validation schema from remote source. Please check your internet connection.'
     );
   }
 }
