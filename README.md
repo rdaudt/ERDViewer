@@ -13,7 +13,7 @@ A visualization and exploration tool for relational data models. ERD Viewer help
 
 ## Current Status
 
-**Phase 1 Complete**: File Upload & Validation
+**Phase 2 Complete**: Basic ERD Rendering
 - ✅ Development environment with hot reload
 - ✅ TypeScript with strict type checking
 - ✅ Production build system
@@ -21,7 +21,11 @@ A visualization and exploration tool for relational data models. ERD Viewer help
 - ✅ File upload with drag-and-drop support
 - ✅ JSON Schema validation with user-friendly error messages
 - ✅ Metadata display for loaded models
-- ⏳ ERD rendering (Phase 2)
+- ✅ Entity rendering on HTML5 Canvas
+- ✅ Grid layout for entities
+- ✅ Three-section entity boxes (header, primary keys, columns)
+- ✅ Foreign key notation
+- ⏳ Relationship rendering (Phase 3)
 - ⏳ Interactive features (coming soon)
 
 ## Prerequisites

@@ -7,6 +7,7 @@
 import './styles.css';
 import { initValidator } from './validation';
 import { initFileUpload } from './fileUpload';
+import { initCanvas } from './renderer';
 
 /**
  * Check if the browser supports required modern features.
@@ -73,6 +74,13 @@ async function initializeApp(): Promise<void> {
     // Initialize validator first
     await initValidator();
     console.log('Validator ready');
+
+    // Initialize canvas renderer
+    const canvasReady = initCanvas();
+    if (!canvasReady) {
+      throw new Error('Failed to initialize canvas');
+    }
+    console.log('Canvas ready');
 
     // Initialize file upload functionality
     initFileUpload();

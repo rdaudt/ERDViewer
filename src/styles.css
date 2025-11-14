@@ -306,35 +306,21 @@ body {
 .canvas-section {
   display: flex;
   flex-direction: column;
-}
-
-.canvas-placeholder {
   background-color: var(--color-surface);
   border: 2px solid var(--color-border);
   border-radius: var(--border-radius);
-  padding: var(--spacing-xl);
-  text-align: center;
+  padding: var(--spacing-md);
   min-height: 600px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  max-height: 90vh;
+  overflow: auto;
 }
 
-.canvas-icon {
-  font-size: 5rem;
-  margin-bottom: var(--spacing-md);
-}
-
-.canvas-placeholder h2 {
-  font-size: 1.75rem;
-  color: var(--color-text-primary);
-  margin-bottom: var(--spacing-sm);
-}
-
-.canvas-placeholder p {
-  color: var(--color-text-secondary);
-  font-size: 1.125rem;
+#erd-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: #ffffff;
+  border-radius: 4px;
 }
 
 /* ========================================
@@ -366,7 +352,7 @@ body {
     min-height: 250px;
   }
 
-  .canvas-placeholder {
+  .canvas-section {
     min-height: 400px;
   }
 }
@@ -386,15 +372,11 @@ body {
   }
 
   .upload-zone,
-  .canvas-placeholder {
+  .canvas-section {
     padding: var(--spacing-lg);
   }
 
   .upload-icon {
     font-size: 3rem;
-  }
-
-  .canvas-icon {
-    font-size: 4rem;
   }
 }

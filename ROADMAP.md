@@ -2,7 +2,7 @@
 
 This roadmap outlines the planned feature development for ERD Viewer following the OpenSpec-driven development approach.
 
-## Current Status: Phase 1 Complete ✅
+## Current Status: Phase 2 Complete ✅
 
 **Phase 0: Project Foundation** (Completed)
 - ✅ TypeScript + Vite build system
@@ -32,44 +32,42 @@ This roadmap outlines the planned feature development for ERD Viewer following t
 
 ---
 
-## Phase 2: Basic ERD Rendering (Next)
+## Phase 2: Basic ERD Rendering (Completed ✅)
 
 **Goal:** Render entities (tables) on canvas without relationships
 
-### Capabilities to Implement:
-1. **entity-rendering** - Render tables as boxes with columns
+### Capabilities Implemented:
+1. ✅ **entity-rendering** - Render tables as boxes with columns
+2. ✅ **canvas-management** - Basic canvas setup and initialization
 
----
+### Features Implemented:
+- ✅ Render each entity as a visually distinct box
+- ✅ Three sections per entity:
+  - Header: table name and schema (blue background)
+  - Primary key section: columns with (PK) notation (light blue background)
+  - Regular columns section: remaining columns with (FK) notation where applicable (white background)
+- ✅ Each column on a separate line with data type
+- ✅ Simple grid layout with horizontal centering
+- ✅ HTML5 Canvas API for rendering
+- ✅ High-DPI display support (retina, 4K)
+- ✅ Responsive canvas sizing
 
-## Phase 2: Basic ERD Rendering
+### Implementation Details:
+- Created [src/renderer.ts](src/renderer.ts) - Canvas management and entity rendering
+- Created [src/layout.ts](src/layout.ts) - Grid layout algorithm
+- Updated [src/fileUpload.ts](src/fileUpload.ts) - Triggers rendering after validation
+- Updated [src/main.ts](src/main.ts) - Canvas initialization
+- Updated [index.html](index.html) - Added canvas element
+- Updated [src/styles.css](src/styles.css) - Canvas styling
 
-**Goal:** Render entities (tables) on canvas without relationships
-
-### Capabilities to Implement:
-1. **entity-rendering** - Render tables as boxes with columns
-2. **canvas-management** - Basic canvas setup and initialization
-
-### Features:
-- Render each entity as a visually distinct box
-- Three sections per entity:
-  - Header: table name
-  - Primary key section: columns with (PK) notation
-  - Regular columns section: remaining columns with (FK) notation where applicable
-- Each column on a separate line
-- Basic positioning (simple grid layout initially)
-- Use Canvas API or SVG for rendering
-
-### Acceptance Criteria:
-- All entities from uploaded file are rendered
-- Entity boxes have clear visual hierarchy (header, PK section, columns)
-- Primary key columns show (PK) notation
-- Foreign key columns show (FK) notation
-- Entities are readable and properly styled
-
-### Dependencies:
-- Phase 1 (file upload) must be complete
-
-### Estimated Effort: 3-4 days
+### Acceptance Criteria Met:
+- ✅ All entities from uploaded file are rendered
+- ✅ Entity boxes have clear visual hierarchy (header, PK section, columns)
+- ✅ Primary key columns show (PK) notation
+- ✅ Foreign key columns show (FK) notation
+- ✅ Entities are readable and properly styled
+- ✅ Grid layout centers entities and handles wrapping
+- ✅ Canvas clears when uploading new file
 
 ---
 

@@ -6,6 +6,7 @@
 
 import { validateModel } from './validation';
 import { setModel, clearModel, setValidationErrors, getMetadata } from './state';
+import { renderModel, clearCanvas, hideCanvas } from './renderer';
 import type { ERDVModel } from './types';
 
 // UI Elements
@@ -167,6 +168,18 @@ async function processFile(file: File): Promise<void> {
 
       // Display success
       displayMetadata(result.data);
+
+      // Render the diagram
+      try {
+        renderModel(result.data);
+        console.log('Diagram rendered successfully');
+      } catch (renderError) {
+        console.error('Failed to render diagram:', renderError);
+        displayErrors([
+          'File loaded but rendering failed',
+          'See console for details',
+        ]);
+      }
     } else {
       // Display validation errors
       setValidationErrors(result.errors || ['Unknown validation error']);
@@ -279,6 +292,10 @@ function displayErrors(errors: string[]): void {
  */
 function clearUploadState(): void {
   clearModel();
+
+  // Clear and hide canvas
+  clearCanvas();
+  hideCanvas();
 
   // Reset file input
   if (fileInput) {
