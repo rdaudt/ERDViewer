@@ -8,8 +8,9 @@
 import type { ERDVModel, Entity, Column } from './types';
 import { calculateGridLayout, type LayoutPosition } from './layout';
 import { renderRelationships, setRelationshipContext } from './relationships';
-import { getLineStyle, getCanvasTransform } from './state';
+import { getLineStyle, getCanvasTransform, getSelectedSubjectArea } from './state';
 import { applyCanvasTransform, getMergedPositions, setEntityPositions } from './interactions';
+import { getEntitiesForSubjectArea, getRelationshipsForSubjectArea } from './subjectAreas';
 
 // Canvas and context references
 let canvas: HTMLCanvasElement | null = null;
@@ -127,6 +128,27 @@ export function hideCanvas(): void {
 }
 
 /**
+ * Render an empty state message on the canvas
+ * @param message - The message to display
+ */
+function renderEmptyMessage(message: string): void {
+  if (!canvas || !ctx) return;
+
+  // Reset transform to identity for centered text
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+  const rect = canvas.getBoundingClientRect();
+  const centerX = rect.width / 2;
+  const centerY = rect.height / 2;
+
+  ctx.font = '16px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+  ctx.fillStyle = COLOR_TEXT;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(message, centerX, centerY);
+}
+
+/**
  * Render the entire ERD model
  * @param model - The validated ERD model to render
  */
@@ -140,12 +162,26 @@ export function renderModel(model: ERDVModel): void {
     // Clear canvas
     clearCanvas();
 
-    // Calculate layout positions
+    // Get selected subject area (null = "All")
+    const selectedArea = getSelectedSubjectArea();
+
+    // Filter entities and relationships based on selected subject area
+    const filteredEntities = getEntitiesForSubjectArea(model, selectedArea);
+    const filteredRelationships = getRelationshipsForSubjectArea(model, selectedArea, filteredEntities);
+
+    // Check for empty subject area
+    if (filteredEntities.length === 0) {
+      renderEmptyMessage('No entities in this subject area');
+      showCanvas();
+      return;
+    }
+
+    // Calculate layout positions for filtered entities
     const rect = canvas.getBoundingClientRect();
-    const gridPositions = calculateGridLayout(model.entities, rect.width, rect.height);
+    const gridPositions = calculateGridLayout(filteredEntities, rect.width, rect.height);
 
     // Merge grid positions with entity position overrides
-    const positions = getMergedPositions(gridPositions, model.entities);
+    const positions = getMergedPositions(gridPositions, filteredEntities);
 
     // Store positions for interaction hit testing
     setEntityPositions(positions);
@@ -154,13 +190,20 @@ export function renderModel(model: ERDVModel): void {
     const transform = getCanvasTransform();
     applyCanvasTransform(ctx, transform);
 
+    // Create filtered model for rendering
+    const filteredModel = {
+      ...model,
+      entities: filteredEntities,
+      relationships: filteredRelationships,
+    };
+
     // Render relationships first (background layer)
-    renderRelationships(model, positions, getLineStyle());
+    renderRelationships(filteredModel, positions, getLineStyle());
 
     // Render each entity
     let renderedCount = 0;
-    for (let i = 0; i < model.entities.length; i++) {
-      const entity = model.entities[i];
+    for (let i = 0; i < filteredEntities.length; i++) {
+      const entity = filteredEntities[i];
       const position = positions[i];
 
       // Skip entities with no columns
@@ -169,11 +212,12 @@ export function renderModel(model: ERDVModel): void {
         continue;
       }
 
-      renderEntity(entity, position.x, position.y, model);
+      renderEntity(entity, position.x, position.y, filteredModel);
       renderedCount++;
     }
 
-    console.log(`Rendered ${renderedCount} entities with transform zoom=${transform.zoom.toFixed(2)}`);
+    const areaMsg = selectedArea ? `in "${selectedArea}"` : 'total';
+    console.log(`Rendered ${renderedCount} entities ${areaMsg} with transform zoom=${transform.zoom.toFixed(2)}`);
 
     // Show canvas
     showCanvas();

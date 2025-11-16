@@ -8,6 +8,8 @@ import { validateModel } from './validation';
 import { setModel, clearModel, setValidationErrors, getMetadata } from './state';
 import { renderModel, clearCanvas, hideCanvas } from './renderer';
 import type { ERDVModel } from './types';
+import { detectSubjectAreas } from './subjectAreas';
+import { populateSubjectAreaSelector } from './main';
 
 // UI Elements
 let uploadZone: HTMLElement | null = null;
@@ -118,13 +120,13 @@ function handleFileSelect(event: Event): void {
  */
 async function processFile(file: File): Promise<void> {
   // Validate file type
-  const validExtensions = ['.erdv', '.json'];
+  const validExtensions = ['.json'];
   const fileExtension = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
 
   if (!validExtensions.includes(fileExtension)) {
     displayErrors([
       `Invalid file type: ${file.name}`,
-      'Please upload a .erdv or .json file.',
+      'Please upload a .json file.',
     ]);
     return;
   }
@@ -168,6 +170,11 @@ async function processFile(file: File): Promise<void> {
 
       // Display success
       displayMetadata(result.data);
+
+      // Detect subject areas and populate selector
+      const subjectAreas = detectSubjectAreas(result.data);
+      populateSubjectAreaSelector(subjectAreas);
+      console.log(`Detected ${subjectAreas.length} subject areas`);
 
       // Render the diagram
       try {

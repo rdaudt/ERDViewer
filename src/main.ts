@@ -8,10 +8,12 @@ import './styles.css';
 import { initValidator } from './validation';
 import { initFileUpload } from './fileUpload';
 import { initCanvas, renderModel, getCanvas } from './renderer';
-import { setLineStyle } from './state';
+import { setLineStyle, setSelectedSubjectArea } from './state';
 import { getModel } from './state';
 import type { LineStyle } from './relationships';
 import { initInteractions, zoomIn, zoomOut, resetView } from './interactions';
+import type { SubjectAreaInfo } from './types';
+import { resetCanvasTransform, clearEntityPositionOverrides } from './state';
 
 /**
  * Check if the browser supports required modern features.
@@ -114,6 +116,72 @@ function initZoomControls(): void {
 }
 
 /**
+ * Populate the subject area dropdown with available subject areas.
+ * @param areas - Array of subject area info objects
+ */
+export function populateSubjectAreaSelector(areas: SubjectAreaInfo[]): void {
+  const dropdown = document.getElementById('subject-area-dropdown') as HTMLSelectElement;
+  const container = document.getElementById('subject-area-selector');
+
+  if (!dropdown || !container) {
+    console.warn('Subject area selector elements not found');
+    return;
+  }
+
+  // Clear existing options
+  dropdown.innerHTML = '';
+
+  // Add options for each subject area
+  for (const area of areas) {
+    const option = document.createElement('option');
+    option.value = area.isSynthetic ? '' : area.name;  // Empty string for "All"
+    option.textContent = `${area.name} (${area.entityCount} entities)`;
+    dropdown.appendChild(option);
+  }
+
+  // Show the selector
+  container.hidden = false;
+}
+
+/**
+ * Initialize subject area selector event handler.
+ */
+function initSubjectAreaSelector(): void {
+  const dropdown = document.getElementById('subject-area-dropdown') as HTMLSelectElement;
+  if (!dropdown) {
+    console.warn('Subject area dropdown not found');
+    return;
+  }
+
+  dropdown.addEventListener('change', (event) => {
+    const target = event.target as HTMLSelectElement;
+    const selectedValue = target.value;
+    const areaName = selectedValue === '' ? null : selectedValue;
+
+    console.log(`Subject area changed to: ${areaName || 'All'}`);
+
+    // Update state
+    setSelectedSubjectArea(areaName);
+
+    // Reset view (zoom, pan, entity positions)
+    resetCanvasTransform();
+    clearEntityPositionOverrides();
+
+    // Re-render the diagram with filtered data
+    const model = getModel();
+    if (model) {
+      renderModel(model);
+    }
+  });
+
+  // Hide by default (shown after model load)
+  const container = document.getElementById('subject-area-selector');
+  if (container) {
+    container.hidden = true;
+  }
+}
+
+/**
  * Initialize the application.
  */
 async function initializeApp(): Promise<void> {
@@ -152,6 +220,10 @@ async function initializeApp(): Promise<void> {
     // Initialize zoom controls
     initZoomControls();
     console.log('Zoom controls ready');
+
+    // Initialize subject area selector
+    initSubjectAreaSelector();
+    console.log('Subject area selector ready');
   } catch (error) {
     console.error('Initialization error:', error);
 

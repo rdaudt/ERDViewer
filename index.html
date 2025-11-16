@@ -21,11 +21,11 @@
       <!-- Upload Zone (drag-drop) -->
       <div class="upload-zone" id="upload-zone">
         <p class="upload-icon">📁</p>
-        <h2>Upload .erdv File</h2>
+        <h2>Upload JSON File</h2>
         <p>Drag and drop your file here, or click to browse</p>
-        <input type="file" id="file-input" accept=".erdv,.json" hidden aria-label="File upload input">
+        <input type="file" id="file-input" accept=".json" hidden aria-label="File upload input">
         <button id="upload-button" class="button-primary">Select File</button>
-        <p class="upload-hint">Supported formats: .erdv, .json</p>
+        <p class="upload-hint">Supported format: .json</p>
       </div>
 
       <!-- Loading Indicator -->
@@ -42,6 +42,13 @@
           <p><strong>Database:</strong> <span id="database-name">-</span></p>
           <p><strong>Entities:</strong> <span id="entity-count">0</span></p>
           <p><strong>Relationships:</strong> <span id="relationship-count">0</span></p>
+        </div>
+        <!-- Subject Area Selector -->
+        <div class="subject-area-selector" id="subject-area-selector" hidden>
+          <label for="subject-area-dropdown">Subject Area:</label>
+          <select id="subject-area-dropdown" class="subject-area-dropdown" aria-label="Select subject area to filter diagram">
+            <option value="">All</option>
+          </select>
         </div>
         <button id="upload-another" class="button-secondary">Upload Different File</button>
       </div>

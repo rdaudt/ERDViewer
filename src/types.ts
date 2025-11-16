@@ -108,6 +108,21 @@ export interface SubjectArea {
 }
 
 /**
+ * Subject area information for UI rendering and filtering.
+ * Extends SubjectArea with synthetic area flag.
+ */
+export interface SubjectAreaInfo {
+  /** Name of the subject area */
+  name: string;
+  /** Number of entities in this subject area */
+  entityCount: number;
+  /** Array of entity names in this subject area */
+  entityNames: string[];
+  /** True if this is the synthetic "All" area */
+  isSynthetic: boolean;
+}
+
+/**
  * The complete ERDV model structure.
  * This is the root object in a .erdv file.
  */

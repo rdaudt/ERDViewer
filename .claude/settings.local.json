@@ -14,7 +14,14 @@
       "Bash(git commit:*)",
       "Bash(git remote add:*)",
       "Bash(git branch:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(tree:*)",
+      "Bash(openspec archive add-basic-erd-rendering:*)",
+      "Bash(cat:*)",
+      "Bash(npx openspec list)",
+      "Bash(npx openspec:*)",
+      "SlashCommand(/openspec:proposal interactive-canvas)",
+      "SlashCommand(/openspec:proposal:*)"
     ],
     "deny": [],
     "ask": []

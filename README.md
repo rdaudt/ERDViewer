@@ -4,7 +4,7 @@ A visualization and exploration tool for relational data models. ERD Viewer help
 
 ## Features (Planned)
 
-- **File Upload**: Upload `.erdv` (JSON) files containing data model definitions
+- **File Upload**: Upload `.json` files containing data model definitions
 - **ERD Visualization**: Render entities, columns, and relationships as interactive diagrams
 - **Subject Areas**: Filter and view logical groupings of entities
 - **Interactive Canvas**: Zoom, pan, and drag entities around the canvas
@@ -88,8 +88,8 @@ This serves the production build at `http://localhost:5173`.
 ### Uploading a Data Model
 
 1. **Start the development server** (see above)
-2. **Upload a `.erdv` file** using one of these methods:
-   - **Drag and drop**: Drag a `.erdv` or `.json` file onto the upload zone
+2. **Upload a `.json` file** using one of these methods:
+   - **Drag and drop**: Drag a `.json` file onto the upload zone
    - **Click to browse**: Click the "Select File" button and choose a file from your system
 
 3. **Validation**: The file will be automatically validated against the ERD schema
@@ -131,13 +131,13 @@ Once a diagram is loaded, you can interact with it in several ways:
 
 ### File Requirements
 
-- **Format**: `.erdv` or `.json` files
+- **Format**: `.json` files
 - **Content**: Must conform to the ERD schema defined in [erdv_file_spec.json](erdv_file_spec.json)
 - **Size**: Files larger than 10MB will generate a console warning but will still be processed
 
 ### Example Files
 
-Create a simple test file (`test.erdv`):
+Create a simple test file (`test.json`):
 ```json
 {
   "$schema": "https://example.com/schemas/erd-model.schema.json",
@@ -177,7 +177,7 @@ erd-viewer/
 ├── index.html              # Entry HTML file
 ├── src/
 │   ├── main.ts             # Application entry point
-│   ├── types.ts            # TypeScript type definitions for .erdv files
+│   ├── types.ts            # TypeScript type definitions for JSON data model files
 │   ├── state.ts            # Application state management
 │   ├── validation.ts       # JSON Schema validation using ajv
 │   ├── fileUpload.ts       # File upload and drag-drop handling
@@ -232,7 +232,7 @@ This project follows **OpenSpec-driven development**:
 
 ## File Format
 
-ERD Viewer works with `.erdv` files (JSON format). The schema is defined in `erdv_file_spec.json`.
+ERD Viewer works with `.json` files containing data model definitions. The schema is defined in `erdv_file_spec.json`.
 
 Example structure:
 ```json

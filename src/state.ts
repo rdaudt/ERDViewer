@@ -28,6 +28,7 @@ interface AppState {
   lineStyle: LineStyle;
   canvasTransform: CanvasTransform;
   entityPositionOverrides: Map<string, { x: number; y: number }>;  // entityName → position
+  selectedSubjectArea: string | null;  // null represents "All"
 }
 
 /**
@@ -41,6 +42,7 @@ let state: AppState = {
   lineStyle: 'orthogonal',
   canvasTransform: { zoom: 1.0, panX: 0, panY: 0 },
   entityPositionOverrides: new Map(),
+  selectedSubjectArea: null,  // null = "All"
 };
 
 /**
@@ -77,6 +79,8 @@ export function setModel(model: ERDVModel, fileName: string): void {
   // Reset transform and position overrides when new model loads
   state.canvasTransform = { zoom: 1.0, panX: 0, panY: 0 };
   state.entityPositionOverrides.clear();
+  // Reset selected subject area to "All"
+  state.selectedSubjectArea = null;
 }
 
 /**
@@ -196,4 +200,20 @@ export function clearEntityPositionOverrides(): void {
  */
 export function getAllEntityPositionOverrides(): Map<string, { x: number; y: number }> {
   return state.entityPositionOverrides;
+}
+
+/**
+ * Get the currently selected subject area
+ * @returns The subject area name or null (representing "All")
+ */
+export function getSelectedSubjectArea(): string | null {
+  return state.selectedSubjectArea;
+}
+
+/**
+ * Set the selected subject area
+ * @param name - The subject area name to select, or null for "All"
+ */
+export function setSelectedSubjectArea(name: string | null): void {
+  state.selectedSubjectArea = name;
 }
