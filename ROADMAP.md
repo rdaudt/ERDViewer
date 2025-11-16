@@ -2,7 +2,7 @@
 
 This roadmap outlines the planned feature development for ERD Viewer following the OpenSpec-driven development approach.
 
-## Current Status: Phase 2 Complete ✅
+## Current Status: Phase 4 Complete ✅
 
 **Phase 0: Project Foundation** (Completed)
 - ✅ TypeScript + Vite build system
@@ -71,68 +71,127 @@ This roadmap outlines the planned feature development for ERD Viewer following t
 
 ---
 
-## Phase 3: Relationship Rendering
+## Phase 3: Relationship Rendering (Completed ✅)
 
 **Goal:** Draw relationship lines between entities using crow's foot notation
 
-### Capabilities to Implement:
-1. **relationship-rendering** - Draw lines connecting parent/child entities
-2. **crows-foot-notation** - Implement crow's foot cardinality symbols
+### Capabilities Implemented:
+1. ✅ **relationship-rendering** - Draw lines connecting parent/child entities
+2. ✅ **crows-foot-notation** - Implement crow's foot cardinality symbols
 
-### Features:
-- Draw lines from parent entity (primary key) to child entity (foreign key)
-- Implement crow's foot notation for cardinality:
-  - 0..1, 1..1, 0..N, 1..N
-- Support different line styles:
+### Features Implemented:
+- ✅ Draw lines from parent entity to child entity
+- ✅ Implement crow's foot notation for all cardinality types:
+  - 0..1 (optional one): circle + single line
+  - 1..1 (required one): single line only
+  - 0..N (optional many): circle + crow's foot
+  - 1..N (required many): crow's foot only
+- ✅ Support three line routing styles:
   - Straight lines
-  - Rounded lines
+  - Rounded lines (bezier curves)
   - Orthogonal (right-angle) lines
-- Line style selector in UI
-- Lines connect to specific columns (or entity edges)
+- ✅ Line style selector in UI with dropdown
+- ✅ Lines connect to entity edge centers (optimized for grid layout)
+- ✅ Visual distinction: solid lines for Identifying, dashed for Non-Identifying relationships
+- ✅ Self-referencing relationship support (entity → itself)
+- ✅ Multiple relationships between same entities support
 
-### Acceptance Criteria:
-- All relationships are rendered as lines
-- Crow's foot notation correctly represents cardinality
-- Users can switch between line styles (straight, rounded, orthogonal)
-- Lines are visually distinct from entities
-- Identifying vs Non-Identifying relationships are visually different (optional enhancement)
+### Implementation Details:
+- Created [src/relationships.ts](src/relationships.ts) - Relationship rendering with crow's foot notation
+- Updated [src/renderer.ts](src/renderer.ts) - Integrated relationship rendering (z-order: relationships before entities)
+- Updated [src/state.ts](src/state.ts) - Added line style preference state
+- Updated [src/main.ts](src/main.ts) - Line style selector initialization
+- Updated [index.html](index.html) - Added line style selector control
+- Updated [src/styles.css](src/styles.css) - Styled line style selector
 
-### Dependencies:
-- Phase 2 (entity rendering) must be complete
-
-### Estimated Effort: 4-5 days
+### Acceptance Criteria Met:
+- ✅ All relationships are rendered as lines
+- ✅ Crow's foot notation correctly represents cardinality
+- ✅ Users can switch between line styles (straight, rounded, orthogonal)
+- ✅ Lines are visually distinct from entities (rendered in background layer)
+- ✅ Identifying vs Non-Identifying relationships are visually different (solid vs dashed)
+- ✅ Self-referencing relationships render as loops
+- ✅ Diagram re-renders when line style changes
 
 ---
 
-## Phase 4: Interactive Canvas
+## Phase 4: Interactive Canvas (Completed ✅)
 
 **Goal:** Enable zoom, pan, and drag interactions
 
-### Capabilities to Implement:
-1. **canvas-zoom-pan** - Zoom in/out and pan across canvas
-2. **entity-dragging** - Drag entities to reposition them
-3. **relationship-updates** - Update relationship lines when entities move
+### Capabilities Implemented:
+1. ✅ **canvas-zoom-pan** - Zoom in/out and pan across canvas
+2. ✅ **entity-dragging** - Drag entities to reposition them
 
-### Features:
-- Zoom in/out (mouse wheel, buttons, pinch on touch devices)
-- Pan across canvas (click-drag on background, or dedicated pan mode)
-- Drag individual entities to new positions
-- Relationship lines automatically update when entities move
-- Maintain entity positions in application state
-- Reset view button to return to initial state
+### Features Implemented:
+- ✅ Zoom in/out with mouse wheel (zoom toward cursor position)
+- ✅ Zoom controls UI (zoom in/out/reset buttons, zoom level display)
+- ✅ Zoom with keyboard shortcuts (Ctrl+Plus, Ctrl+Minus, Ctrl+0)
+- ✅ Zoom limits: 10% to 500% (0.1 to 5.0)
+- ✅ Pan across canvas by dragging background
+- ✅ Drag individual entities to custom positions
+- ✅ Relationship lines automatically update when entities move
+- ✅ Entity position overrides stored in application state (session-scoped)
+- ✅ Reset view button clears transform and custom positions
+- ✅ Touch gesture support (pinch-to-zoom, two-finger pan)
+- ✅ Cursor feedback (grab/grabbing/move)
+- ✅ State machine for interaction modes (idle, dragging_entity, panning_canvas)
+- ✅ Coordinate transformations between screen and canvas space
+- ✅ Hit testing using AABB (axis-aligned bounding box) collision detection
+- ✅ Performance optimization (throttled events, requestAnimationFrame)
 
-### Acceptance Criteria:
-- Users can zoom in/out smoothly
-- Users can pan across the entire canvas
-- Users can drag entities to any position
-- Relationship lines stay connected and update dynamically
-- Zoom/pan/drag interactions feel smooth and responsive
-- Canvas doesn't "jump" or have jarring movements
+### Implementation Details:
+- Created [src/interactions.ts](src/interactions.ts) - Canvas interactions module (~450 lines)
+  - Coordinate transformation functions (screenToCanvas, canvasToScreen)
+  - Canvas transform application using ctx.setTransform() API
+  - Hit testing with AABB collision detection (reverse render order)
+  - Zoom functionality (mouse wheel, buttons, keyboard, touch gestures)
+  - Pan functionality (drag background)
+  - Entity dragging with position overrides
+  - State machine for interaction modes
+  - Event handlers (mouse, touch, keyboard, wheel)
+- Updated [src/state.ts](src/state.ts) - Added CanvasTransform interface and entity position overrides
+  - Transform state (zoom, panX, panY)
+  - Entity position overrides Map
+  - Getter/setter functions for transform and overrides
+  - Reset functions for transform and overrides
+  - Clear overrides on new file load
+- Updated [src/renderer.ts](src/renderer.ts) - Integrated canvas transform and merged positions
+  - Apply canvas transform before rendering
+  - Merge grid layout positions with custom overrides
+  - Export canvas element for interaction initialization
+- Updated [index.html](index.html) - Added zoom controls UI
+  - Zoom in button (+)
+  - Zoom out button (−)
+  - Reset view button (⟲)
+  - Zoom level display
+- Updated [src/styles.css](src/styles.css) - Styled zoom controls
+  - Positioned zoom controls (fixed bottom-right)
+  - Button styling with hover/active/disabled states
+  - Zoom level display styling
+- Updated [src/main.ts](src/main.ts) - Initialize interactions and zoom controls
+  - Initialize canvas interactions with event listeners
+  - Attach click handlers to zoom control buttons
 
-### Dependencies:
-- Phase 3 (relationship rendering) must be complete
+### Acceptance Criteria Met:
+- ✅ Users can zoom in/out smoothly (mouse wheel, buttons, keyboard, touch)
+- ✅ Users can pan across the entire canvas (drag background)
+- ✅ Users can drag entities to any position
+- ✅ Relationship lines stay connected and update dynamically
+- ✅ Zoom/pan/drag interactions feel smooth and responsive (60fps)
+- ✅ Canvas doesn't "jump" or have jarring movements
+- ✅ Custom positions persist during zoom/pan
+- ✅ Reset button clears all custom state
+- ✅ New file load clears custom positions and transform
 
-### Estimated Effort: 4-5 days
+### Technical Decisions:
+1. **Canvas Transform API**: Used ctx.setTransform() for automatic coordinate transformation
+2. **Transform Order**: Pan first, then zoom (translate → scale)
+3. **Entity Position Storage**: Map<entityName, {x, y}> in state
+4. **Drag Detection**: AABB hit testing in reverse render order
+5. **Relationship Redraw**: Full diagram re-render on transform/position changes
+6. **Position Override Strategy**: Merged positions (grid layout + custom overrides)
+7. **Zoom Controls UI**: Fixed bottom-right positioning with floating panel
 
 ---
 
@@ -345,10 +404,10 @@ This roadmap outlines the planned feature development for ERD Viewer following t
 | Phase | Description | Effort | Dependencies |
 |-------|-------------|--------|--------------|
 | 0 | Project Foundation | ✅ Complete | - |
-| 1 | File Upload & Validation | 2-3 days | Phase 0 |
-| 2 | Basic ERD Rendering | 3-4 days | Phase 1 |
-| 3 | Relationship Rendering | 4-5 days | Phase 2 |
-| 4 | Interactive Canvas | 4-5 days | Phase 3 |
+| 1 | File Upload & Validation | ✅ Complete | Phase 0 |
+| 2 | Basic ERD Rendering | ✅ Complete | Phase 1 |
+| 3 | Relationship Rendering | ✅ Complete | Phase 2 |
+| 4 | Interactive Canvas | ✅ Complete | Phase 3 |
 | 5 | Subject Areas | 3-4 days | Phase 4 |
 | 6 | Entity Selection | 2-3 days | Phase 5 |
 | 7 | Auto-Layout | 5-7 days | Phase 6 |

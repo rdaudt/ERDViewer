@@ -7,6 +7,9 @@
 
 import type { ERDVModel, Entity, Column } from './types';
 import { calculateGridLayout, type LayoutPosition } from './layout';
+import { renderRelationships, setRelationshipContext } from './relationships';
+import { getLineStyle, getCanvasTransform } from './state';
+import { applyCanvasTransform, getMergedPositions, setEntityPositions } from './interactions';
 
 // Canvas and context references
 let canvas: HTMLCanvasElement | null = null;
@@ -14,9 +17,9 @@ let ctx: CanvasRenderingContext2D | null = null;
 let canvasSection: HTMLElement | null = null;
 
 // Entity styling constants
-const ENTITY_WIDTH = 250;
-const HEADER_HEIGHT = 32;
-const ROW_HEIGHT = 24;
+export const ENTITY_WIDTH = 250;
+export const HEADER_HEIGHT = 32;
+export const ROW_HEIGHT = 24;
 const PADDING_H = 8;
 const PADDING_V = 4;
 const MIN_ENTITY_HEIGHT = 80;
@@ -58,6 +61,9 @@ export function initCanvas(): boolean {
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
 
+    // Initialize relationship rendering context
+    setRelationshipContext(ctx);
+
     console.log('Canvas initialized successfully');
     return true;
   } catch (error) {
@@ -89,10 +95,15 @@ function setupHighDPICanvas(): void {
 
 /**
  * Clear the canvas completely
+ * IMPORTANT: This must clear in screen space, not transformed space
  */
 export function clearCanvas(): void {
   if (!canvas || !ctx) return;
 
+  // Reset transform to identity before clearing
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+  // Clear entire canvas in screen coordinates
   const rect = canvas.getBoundingClientRect();
   ctx.clearRect(0, 0, rect.width, rect.height);
 }
@@ -131,7 +142,20 @@ export function renderModel(model: ERDVModel): void {
 
     // Calculate layout positions
     const rect = canvas.getBoundingClientRect();
-    const positions = calculateGridLayout(model.entities, rect.width, rect.height);
+    const gridPositions = calculateGridLayout(model.entities, rect.width, rect.height);
+
+    // Merge grid positions with entity position overrides
+    const positions = getMergedPositions(gridPositions, model.entities);
+
+    // Store positions for interaction hit testing
+    setEntityPositions(positions);
+
+    // Apply canvas transform (zoom and pan)
+    const transform = getCanvasTransform();
+    applyCanvasTransform(ctx, transform);
+
+    // Render relationships first (background layer)
+    renderRelationships(model, positions, getLineStyle());
 
     // Render each entity
     let renderedCount = 0;
@@ -149,7 +173,7 @@ export function renderModel(model: ERDVModel): void {
       renderedCount++;
     }
 
-    console.log(`Rendered ${renderedCount} entities`);
+    console.log(`Rendered ${renderedCount} entities with transform zoom=${transform.zoom.toFixed(2)}`);
 
     // Show canvas
     showCanvas();
@@ -369,4 +393,12 @@ export function getEntityWidth(): number {
  */
 export function getEntityHeight(entity: Entity): number {
   return calculateEntityHeight(entity);
+}
+
+/**
+ * Get the canvas element for interaction handling
+ * @returns The canvas element or null
+ */
+export function getCanvas(): HTMLCanvasElement | null {
+  return canvas;
 }

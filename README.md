@@ -13,7 +13,7 @@ A visualization and exploration tool for relational data models. ERD Viewer help
 
 ## Current Status
 
-**Phase 2 Complete**: Basic ERD Rendering
+**Phase 4 Complete**: Interactive Canvas
 - ✅ Development environment with hot reload
 - ✅ TypeScript with strict type checking
 - ✅ Production build system
@@ -25,8 +25,16 @@ A visualization and exploration tool for relational data models. ERD Viewer help
 - ✅ Grid layout for entities
 - ✅ Three-section entity boxes (header, primary keys, columns)
 - ✅ Foreign key notation
-- ⏳ Relationship rendering (Phase 3)
-- ⏳ Interactive features (coming soon)
+- ✅ Relationship rendering with crow's foot notation
+- ✅ Three line routing styles (straight, rounded, orthogonal)
+- ✅ Visual distinction for Identifying vs Non-Identifying relationships
+- ✅ Support for all cardinality types (0..1, 1..1, 0..N, 1..N)
+- ✅ Canvas zoom with mouse wheel, buttons, and keyboard shortcuts (10%-500%)
+- ✅ Canvas panning by dragging background
+- ✅ Entity dragging to custom positions
+- ✅ Touch gesture support (pinch-to-zoom, two-finger pan)
+- ✅ Zoom controls UI (zoom in/out/reset buttons, zoom level display)
+- ⏳ Subject area filtering (coming soon)
 
 ## Prerequisites
 
@@ -90,6 +98,37 @@ This serves the production build at `http://localhost:5173`.
 
 4. **Upload another file**: Click "Upload Different File" to load a new model
 
+### Interacting with the Diagram
+
+Once a diagram is loaded, you can interact with it in several ways:
+
+**Zooming**:
+- **Mouse Wheel**: Scroll up to zoom in, scroll down to zoom out
+- **Zoom Buttons**: Click the + button to zoom in, - button to zoom out
+- **Keyboard Shortcuts**:
+  - `Ctrl +` or `Ctrl =` to zoom in
+  - `Ctrl -` to zoom out
+  - `Ctrl 0` to reset view
+- **Zoom Range**: 10% to 500%
+- **Zoom Level**: Current zoom percentage is displayed in the zoom controls
+
+**Panning**:
+- Click and drag on empty canvas space to pan the view
+- The cursor changes to a "grab" hand when panning
+
+**Entity Dragging**:
+- Click and drag any entity box to move it to a custom position
+- Relationships automatically update to follow the entity
+- Custom positions persist during zoom and pan operations
+- Custom positions are cleared when loading a new file
+
+**Reset View**:
+- Click the reset button (⟲) to restore default zoom, pan, and entity positions
+
+**Touch Gestures** (on touch devices):
+- Pinch to zoom in/out
+- Two-finger drag to pan
+
 ### File Requirements
 
 - **Format**: `.erdv` or `.json` files
@@ -142,6 +181,10 @@ erd-viewer/
 │   ├── state.ts            # Application state management
 │   ├── validation.ts       # JSON Schema validation using ajv
 │   ├── fileUpload.ts       # File upload and drag-drop handling
+│   ├── renderer.ts         # Canvas rendering for entities
+│   ├── layout.ts           # Entity layout algorithms
+│   ├── relationships.ts    # Relationship line rendering with crow's foot notation
+│   ├── interactions.ts     # Canvas interactions (zoom, pan, drag)
 │   └── styles.css          # Global styles
 ├── dist/                   # Production build output (generated)
 ├── node_modules/           # Dependencies (generated)

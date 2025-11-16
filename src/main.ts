@@ -7,7 +7,11 @@
 import './styles.css';
 import { initValidator } from './validation';
 import { initFileUpload } from './fileUpload';
-import { initCanvas } from './renderer';
+import { initCanvas, renderModel, getCanvas } from './renderer';
+import { setLineStyle } from './state';
+import { getModel } from './state';
+import type { LineStyle } from './relationships';
+import { initInteractions, zoomIn, zoomOut, resetView } from './interactions';
 
 /**
  * Check if the browser supports required modern features.
@@ -62,6 +66,54 @@ function checkBrowserCompatibility(): boolean {
 }
 
 /**
+ * Initialize line style selector.
+ */
+function initLineStyleSelector(): void {
+  const selector = document.getElementById('line-style-selector') as HTMLSelectElement;
+  if (!selector) {
+    console.warn('Line style selector not found');
+    return;
+  }
+
+  selector.addEventListener('change', (event) => {
+    const target = event.target as HTMLSelectElement;
+    const lineStyle = target.value as LineStyle;
+
+    // Update state
+    setLineStyle(lineStyle);
+
+    // Re-render the diagram if a model is loaded
+    const model = getModel();
+    if (model) {
+      renderModel(model);
+    }
+
+    console.log(`Line style changed to: ${lineStyle}`);
+  });
+}
+
+/**
+ * Initialize zoom controls.
+ */
+function initZoomControls(): void {
+  const zoomInBtn = document.getElementById('zoom-in-btn');
+  const zoomOutBtn = document.getElementById('zoom-out-btn');
+  const resetViewBtn = document.getElementById('reset-view-btn');
+
+  if (zoomInBtn) {
+    zoomInBtn.addEventListener('click', zoomIn);
+  }
+
+  if (zoomOutBtn) {
+    zoomOutBtn.addEventListener('click', zoomOut);
+  }
+
+  if (resetViewBtn) {
+    resetViewBtn.addEventListener('click', resetView);
+  }
+}
+
+/**
  * Initialize the application.
  */
 async function initializeApp(): Promise<void> {
@@ -85,6 +137,21 @@ async function initializeApp(): Promise<void> {
     // Initialize file upload functionality
     initFileUpload();
     console.log('File upload ready');
+
+    // Initialize line style selector
+    initLineStyleSelector();
+    console.log('Line style selector ready');
+
+    // Initialize canvas interactions (zoom, pan, drag)
+    const canvas = getCanvas();
+    if (canvas) {
+      initInteractions(canvas);
+      console.log('Canvas interactions ready');
+    }
+
+    // Initialize zoom controls
+    initZoomControls();
+    console.log('Zoom controls ready');
   } catch (error) {
     console.error('Initialization error:', error);
 

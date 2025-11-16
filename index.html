@@ -56,7 +56,23 @@
 
     <!-- Canvas Section -->
     <section class="canvas-section" id="canvas-section" hidden>
+      <div class="canvas-controls">
+        <label for="line-style-selector">Relationship Line Style:</label>
+        <select id="line-style-selector" class="line-style-selector">
+          <option value="straight">Straight</option>
+          <option value="rounded">Rounded</option>
+          <option value="orthogonal" selected>Orthogonal</option>
+        </select>
+      </div>
       <canvas id="erd-canvas" role="img" aria-label="Entity-relationship diagram visualization"></canvas>
+
+      <!-- Zoom Controls -->
+      <div class="zoom-controls" id="zoom-controls">
+        <button id="zoom-in-btn" class="zoom-btn" aria-label="Zoom in" title="Zoom in (Ctrl++)">+</button>
+        <button id="zoom-out-btn" class="zoom-btn" aria-label="Zoom out" title="Zoom out (Ctrl+-)">−</button>
+        <button id="reset-view-btn" class="zoom-btn" aria-label="Reset view" title="Reset view (Ctrl+0)">⟲</button>
+        <div id="zoom-level" class="zoom-level">100%</div>
+      </div>
     </section>
   </main>
 
