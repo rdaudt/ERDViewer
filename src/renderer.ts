@@ -8,7 +8,7 @@
 import type { ERDVModel, Entity, Column } from './types';
 import { calculateGridLayout, type LayoutPosition } from './layout';
 import { renderRelationships, setRelationshipContext } from './relationships';
-import { getLineStyle, getCanvasTransform, getSelectedSubjectArea } from './state';
+import { getLineStyle, getCanvasTransform, getSelectedSubjectArea, isEntitySelected, getSelectionCount } from './state';
 import { applyCanvasTransform, getMergedPositions, setEntityPositions } from './interactions';
 import { getEntitiesForSubjectArea, getRelationshipsForSubjectArea } from './subjectAreas';
 
@@ -167,21 +167,36 @@ export function renderModel(model: ERDVModel): void {
 
     // Filter entities and relationships based on selected subject area
     const filteredEntities = getEntitiesForSubjectArea(model, selectedArea);
-    const filteredRelationships = getRelationshipsForSubjectArea(model, selectedArea, filteredEntities);
 
-    // Check for empty subject area
-    if (filteredEntities.length === 0) {
-      renderEmptyMessage('No entities in this subject area');
+    // Further filter entities based on selection state (only render selected entities)
+    const selectedEntities = filteredEntities.filter(e => isEntitySelected(e.name));
+
+    // Check if no entities are selected
+    if (selectedEntities.length === 0) {
+      // Show message only if there are entities available but none selected
+      if (filteredEntities.length > 0) {
+        renderEmptyMessage('No entities selected. Use the dropdown to select tables to display.');
+      } else {
+        renderEmptyMessage('No entities in this subject area');
+      }
       showCanvas();
       return;
     }
 
-    // Calculate layout positions for filtered entities
+    // Filter relationships to only include those between selected entities
+    const selectedEntityNames = new Set(selectedEntities.map(e => e.name));
+    const filteredRelationships = getRelationshipsForSubjectArea(model, selectedArea, filteredEntities)
+      .filter(rel =>
+        selectedEntityNames.has(rel.parent_entity_name) &&
+        selectedEntityNames.has(rel.child_entity_name)
+      );
+
+    // Calculate layout positions for selected entities only
     const rect = canvas.getBoundingClientRect();
-    const gridPositions = calculateGridLayout(filteredEntities, rect.width, rect.height);
+    const gridPositions = calculateGridLayout(selectedEntities, rect.width, rect.height);
 
     // Merge grid positions with entity position overrides
-    const positions = getMergedPositions(gridPositions, filteredEntities);
+    const positions = getMergedPositions(gridPositions, selectedEntities);
 
     // Store positions for interaction hit testing
     setEntityPositions(positions);
@@ -190,20 +205,20 @@ export function renderModel(model: ERDVModel): void {
     const transform = getCanvasTransform();
     applyCanvasTransform(ctx, transform);
 
-    // Create filtered model for rendering
-    const filteredModel = {
+    // Create model with only selected entities for rendering
+    const selectedModel = {
       ...model,
-      entities: filteredEntities,
+      entities: selectedEntities,
       relationships: filteredRelationships,
     };
 
     // Render relationships first (background layer)
-    renderRelationships(filteredModel, positions, getLineStyle());
+    renderRelationships(selectedModel, positions, getLineStyle());
 
-    // Render each entity
+    // Render each selected entity
     let renderedCount = 0;
-    for (let i = 0; i < filteredEntities.length; i++) {
-      const entity = filteredEntities[i];
+    for (let i = 0; i < selectedEntities.length; i++) {
+      const entity = selectedEntities[i];
       const position = positions[i];
 
       // Skip entities with no columns
@@ -212,7 +227,7 @@ export function renderModel(model: ERDVModel): void {
         continue;
       }
 
-      renderEntity(entity, position.x, position.y, filteredModel);
+      renderEntity(entity, position.x, position.y, selectedModel);
       renderedCount++;
     }
 

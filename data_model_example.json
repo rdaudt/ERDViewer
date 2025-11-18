@@ -1,0 +1,86 @@
+{
+  "metadata": {
+    "model_name": "Example data model"
+  },
+  "server_info": {
+    "target_server_name": "Microsoft SQL Server",
+    "version": "11"
+  },
+  "database": "DB1",
+  "schemas": ["dbo"],
+  "entities": [
+    {
+      "name": "GlossaryTerm",
+      "schema_name": "dbo",
+      "columns": [
+        { "name": "GlossaryTermID", "data_type": "bigint", "nullable": false, "order": 1 },
+        { "name": "TermNM", "data_type": "varchar(50)", "nullable": false, "order": 2 },
+        { "name": "ShortDescriptionTXT", "data_type": "varchar(100)", "nullable": true, "order": 3 },
+        { "name": "LongDescriptionTXT", "data_type": "varchar(2000)", "nullable": true, "order": 4 },
+        { "name": "RegulationTXT", "data_type": "varchar(1000)", "nullable": true, "order": 5 },
+        { "name": "SourceTXT", "data_type": "varchar(1000)", "nullable": true, "order": 6 },
+        { "name": "BusAddedDTM", "data_type": "datetime2(7)", "nullable": false, "order": 7 },
+        { "name": "BusAddedUserID", "data_type": "char(8)", "nullable": false, "order": 8 },
+        { "name": "BusLstUpdDTM", "data_type": "datetime2(7)", "nullable": true, "order": 9 },
+        { "name": "BusLstUpdUserID", "data_type": "char(8)", "nullable": true, "order": 10 },
+        { "name": "AddedDTM", "data_type": "datetime2(7)", "nullable": false, "order": 11 },
+        { "name": "AddedByUser", "data_type": "char(8)", "nullable": false, "order": 12 },
+        { "name": "RowVersion", "data_type": "timestamp", "nullable": true, "order": 13 },
+        { "name": "ModifiedDTM", "data_type": "datetime2(7)", "nullable": true, "order": 14 },
+        { "name": "ModifiedByUser", "data_type": "char(8)", "nullable": true, "order": 15 },
+        { "name": "LogicalDeleteDTM", "data_type": "datetime2(7)", "nullable": true, "order": 16 }
+      ],
+      "primary_key_columns": ["GlossaryTermID"]
+    },
+    {
+      "name": "SubstanceGlossaryTerm",
+      "schema_name": "dbo",
+      "columns": [
+        { "name": "SubstanceGlossaryTermID", "data_type": "bigint", "nullable": false, "order": 1 },
+        { "name": "GlossaryTermID", "data_type": "bigint", "nullable": false, "order": 2 },
+        { "name": "LogicalDeleteDTM", "data_type": "datetime2(7)", "nullable": true, "order": 3 },
+        { "name": "BusAddedDTM", "data_type": "datetime2(7)", "nullable": false, "order": 4 },
+        { "name": "BusAddedUserID", "data_type": "char(8)", "nullable": false, "order": 5 },
+        { "name": "BusLstUpdDTM", "data_type": "datetime2(7)", "nullable": true, "order": 6 },
+        { "name": "BusLstUpdUserID", "data_type": "char(8)", "nullable": true, "order": 7 },
+        { "name": "AddedDTM", "data_type": "datetime2(7)", "nullable": false, "order": 8 },
+        { "name": "AddedByUser", "data_type": "char(8)", "nullable": false, "order": 9 },
+        { "name": "ModifiedDTM", "data_type": "datetime2(7)", "nullable": true, "order": 10 },
+        { "name": "ModifiedByUser", "data_type": "char(8)", "nullable": true, "order": 11 },
+        { "name": "RowVersion", "data_type": "timestamp", "nullable": true, "order": 12 }
+      ],
+      "primary_key_columns": ["SubstanceGlossaryTermID"]
+    }
+  ],
+  "relationships": [
+    {
+      "name": "GlossarytoSubstance",
+      "isLogical": false,
+      "parent_entity_name": "GlossaryTerm",
+      "parent_entity_columns": ["GlossaryTermID"],
+      "child_entity_name": "SubstanceGlossaryTerm",
+      "child_entity_columns": ["GlossaryTermID"],
+      "relationship_type": "Non-Identifying",
+      "cardinality": {
+        "notation": "0..N",
+        "description": "Zero or more",
+        "min_cardinality": 0,
+        "max_cardinality": "N"
+      },
+      "verb_phrase": "Glossary links to Substance",
+      "inverse_phrase": "Substance is linked to Glossary"
+    }
+  ],
+  "subject_areas": [
+    {
+      "name": "Subject area 1",
+      "entity_count": 2,
+      "entity_names": ["GlossaryTerm", "SubstanceGlossaryTerm"]
+    },
+    {
+      "name": "Subject area 2",
+      "entity_count": 1,
+      "entity_names": ["GlossaryTerm"]
+    }
+  ]
+}

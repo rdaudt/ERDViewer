@@ -29,6 +29,7 @@ interface AppState {
   canvasTransform: CanvasTransform;
   entityPositionOverrides: Map<string, { x: number; y: number }>;  // entityName → position
   selectedSubjectArea: string | null;  // null represents "All"
+  selectedEntityNames: Set<string>;  // entity names that are selected
 }
 
 /**
@@ -43,6 +44,7 @@ let state: AppState = {
   canvasTransform: { zoom: 1.0, panX: 0, panY: 0 },
   entityPositionOverrides: new Map(),
   selectedSubjectArea: null,  // null = "All"
+  selectedEntityNames: new Set(),  // empty selection on start
 };
 
 /**
@@ -81,6 +83,8 @@ export function setModel(model: ERDVModel, fileName: string): void {
   state.entityPositionOverrides.clear();
   // Reset selected subject area to "All"
   state.selectedSubjectArea = null;
+  // Reset entity selection
+  state.selectedEntityNames.clear();
 }
 
 /**
@@ -216,4 +220,59 @@ export function getSelectedSubjectArea(): string | null {
  */
 export function setSelectedSubjectArea(name: string | null): void {
   state.selectedSubjectArea = name;
+}
+
+/**
+ * Get the set of selected entity names
+ * @returns Set of entity names that are currently selected
+ */
+export function getSelectedEntityNames(): Set<string> {
+  return state.selectedEntityNames;
+}
+
+/**
+ * Check if an entity is currently selected
+ * @param name - The entity name to check
+ * @returns true if the entity is selected, false otherwise
+ */
+export function isEntitySelected(name: string): boolean {
+  return state.selectedEntityNames.has(name);
+}
+
+/**
+ * Toggle entity selection state
+ * @param name - The entity name to toggle
+ */
+export function toggleEntitySelection(name: string): void {
+  if (state.selectedEntityNames.has(name)) {
+    state.selectedEntityNames.delete(name);
+  } else {
+    state.selectedEntityNames.add(name);
+  }
+}
+
+/**
+ * Select all entities with the given names
+ * @param entityNames - Array of entity names to select
+ */
+export function selectAllEntities(entityNames: string[]): void {
+  state.selectedEntityNames.clear();
+  for (const name of entityNames) {
+    state.selectedEntityNames.add(name);
+  }
+}
+
+/**
+ * Clear all entity selections
+ */
+export function clearSelection(): void {
+  state.selectedEntityNames.clear();
+}
+
+/**
+ * Get the number of currently selected entities
+ * @returns Count of selected entities
+ */
+export function getSelectionCount(): number {
+  return state.selectedEntityNames.size;
 }

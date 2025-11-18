@@ -8,12 +8,13 @@ import './styles.css';
 import { initValidator } from './validation';
 import { initFileUpload } from './fileUpload';
 import { initCanvas, renderModel, getCanvas } from './renderer';
-import { setLineStyle, setSelectedSubjectArea } from './state';
+import { setLineStyle, setSelectedSubjectArea, selectAllEntities, clearSelection, getSelectionCount, getSelectedSubjectArea, getSelectedEntityNames } from './state';
 import { getModel } from './state';
 import type { LineStyle } from './relationships';
 import { initInteractions, zoomIn, zoomOut, resetView } from './interactions';
 import type { SubjectAreaInfo } from './types';
 import { resetCanvasTransform, clearEntityPositionOverrides } from './state';
+import { getEntitiesForSubjectArea } from './subjectAreas';
 
 /**
  * Check if the browser supports required modern features.
@@ -167,10 +168,17 @@ function initSubjectAreaSelector(): void {
     resetCanvasTransform();
     clearEntityPositionOverrides();
 
-    // Re-render the diagram with filtered data
+    // Get model for repopulating dropdown and filtering
     const model = getModel();
     if (model) {
+      // Repopulate entity selection dropdown with new subject area's entities
+      populateEntitySelectionDropdown();
+
+      // Re-render the diagram with filtered data
       renderModel(model);
+
+      // Update selection count display
+      updateSelectionCountDisplay();
     }
   });
 
@@ -179,6 +187,152 @@ function initSubjectAreaSelector(): void {
   if (container) {
     container.hidden = true;
   }
+}
+
+/**
+ * Update the selection count display
+ */
+export function updateSelectionCountDisplay(): void {
+  const countDisplay = document.getElementById('selection-count');
+  if (countDisplay) {
+    const count = getSelectionCount();
+    countDisplay.textContent = `${count} entities selected`;
+  }
+}
+
+/**
+ * Populate the entity selection dropdown with entities from current subject area
+ */
+export function populateEntitySelectionDropdown(): void {
+  const dropdown = document.getElementById('entity-selection-dropdown') as HTMLSelectElement;
+  if (!dropdown) {
+    console.warn('Entity selection dropdown not found');
+    return;
+  }
+
+  const model = getModel();
+  if (!model) return;
+
+  // Get visible entities based on current subject area filter
+  const selectedArea = getSelectedSubjectArea();
+  const visibleEntities = getEntitiesForSubjectArea(model, selectedArea);
+
+  // Clear existing options
+  dropdown.innerHTML = '';
+
+  // Add option for each entity
+  for (const entity of visibleEntities) {
+    const option = document.createElement('option');
+    option.value = entity.name;
+    option.textContent = entity.name;
+    dropdown.appendChild(option);
+  }
+
+  // Select options that are in the current selection state
+  const selectedEntityNames = getSelectedEntityNames();
+  Array.from(dropdown.options).forEach(option => {
+    option.selected = selectedEntityNames.has(option.value);
+  });
+}
+
+/**
+ * Initialize entity selection controls
+ */
+function initEntitySelectionControls(): void {
+  const dropdown = document.getElementById('entity-selection-dropdown') as HTMLSelectElement;
+  const selectAllBtn = document.getElementById('select-all-entities-btn');
+  const deselectAllBtn = document.getElementById('deselect-all-entities-btn');
+  const container = document.getElementById('entity-selection');
+
+  if (!dropdown || !selectAllBtn || !deselectAllBtn || !container) {
+    console.warn('Entity selection control elements not found');
+    return;
+  }
+
+  // Flag to prevent dropdown change handler from running during programmatic changes
+  let isProgrammaticChange = false;
+
+  // Dropdown change handler
+  dropdown.addEventListener('change', () => {
+    // Skip if this is a programmatic change from Select All / Deselect All buttons
+    if (isProgrammaticChange) {
+      return;
+    }
+
+    const model = getModel();
+    if (!model) return;
+
+    // Get selected options from dropdown
+    const selectedOptions = Array.from(dropdown.selectedOptions);
+    const selectedNames = selectedOptions.map(opt => opt.value);
+
+    // If selection changed significantly, clear position overrides
+    const currentSelectionCount = getSelectionCount();
+    const newSelectionCount = selectedNames.length;
+
+    // Clear overrides if going from 0 to many, or if selection changed dramatically
+    if (currentSelectionCount === 0 && newSelectionCount > 0) {
+      clearEntityPositionOverrides();
+      resetCanvasTransform();
+    }
+
+    // Update selection state
+    selectAllEntities(selectedNames);
+
+    // Update display and re-render
+    updateSelectionCountDisplay();
+    renderModel(model);
+  });
+
+  // Select All button
+  selectAllBtn.addEventListener('click', () => {
+    const model = getModel();
+    if (!model) return;
+
+    // Clear position overrides and reset view FIRST to ensure clean layout
+    clearEntityPositionOverrides();
+    resetCanvasTransform();
+
+    // Get all entity names from dropdown
+    const entityNames = Array.from(dropdown.options).map(opt => opt.value);
+
+    // Update selection state
+    selectAllEntities(entityNames);
+
+    // Select all options in the dropdown (suppress change event)
+    isProgrammaticChange = true;
+    Array.from(dropdown.options).forEach(option => {
+      option.selected = true;
+    });
+    isProgrammaticChange = false;
+
+    updateSelectionCountDisplay();
+    renderModel(model);
+  });
+
+  // Deselect All button
+  deselectAllBtn.addEventListener('click', () => {
+    // Clear selection state and entity position overrides
+    clearSelection();
+    clearEntityPositionOverrides();
+
+    // Deselect all options in the dropdown (suppress change event)
+    isProgrammaticChange = true;
+    Array.from(dropdown.options).forEach(option => {
+      option.selected = false;
+    });
+    isProgrammaticChange = false;
+
+    updateSelectionCountDisplay();
+
+    const model = getModel();
+    if (model) {
+      renderModel(model);
+    }
+  });
+
+  // Hide by default (shown after model load)
+  container.hidden = true;
 }
 
 /**
@@ -224,6 +378,10 @@ async function initializeApp(): Promise<void> {
     // Initialize subject area selector
     initSubjectAreaSelector();
     console.log('Subject area selector ready');
+
+    // Initialize entity selection controls
+    initEntitySelectionControls();
+    console.log('Entity selection controls ready');
   } catch (error) {
     console.error('Initialization error:', error);
 

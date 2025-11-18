@@ -50,6 +50,18 @@
             <option value="">All</option>
           </select>
         </div>
+        <!-- Entity Selection (Multi-Select Dropdown) -->
+        <div class="entity-selection" id="entity-selection" hidden>
+          <label for="entity-selection-dropdown">Tables to Display:</label>
+          <select id="entity-selection-dropdown" class="entity-selection-dropdown" multiple size="8" aria-label="Select tables to display on canvas">
+            <!-- Populated dynamically with entity names from current subject area -->
+          </select>
+          <div class="entity-selection-actions">
+            <button id="select-all-entities-btn" class="button-secondary" aria-label="Select all tables">Select All</button>
+            <button id="deselect-all-entities-btn" class="button-secondary" aria-label="Deselect all tables">Deselect All</button>
+          </div>
+          <span id="selection-count" class="selection-count">0 entities selected</span>
+        </div>
         <button id="upload-another" class="button-secondary">Upload Different File</button>
       </div>
 

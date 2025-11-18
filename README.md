@@ -13,7 +13,7 @@ A visualization and exploration tool for relational data models. ERD Viewer help
 
 ## Current Status
 
-**Phase 4 Complete**: Interactive Canvas
+**Phase 6 Complete**: Entity Selection
 - ✅ Development environment with hot reload
 - ✅ TypeScript with strict type checking
 - ✅ Production build system
@@ -34,7 +34,9 @@ A visualization and exploration tool for relational data models. ERD Viewer help
 - ✅ Entity dragging to custom positions
 - ✅ Touch gesture support (pinch-to-zoom, two-finger pan)
 - ✅ Zoom controls UI (zoom in/out/reset buttons, zoom level display)
-- ⏳ Subject area filtering (coming soon)
+- ✅ Subject area filtering
+- ✅ Entity selection (click, multi-select, select all/deselect all)
+- ⏳ Auto-layout algorithms (coming soon)
 
 ## Prerequisites
 
@@ -128,6 +130,20 @@ Once a diagram is loaded, you can interact with it in several ways:
 **Touch Gestures** (on touch devices):
 - Pinch to zoom in/out
 - Two-finger drag to pan
+
+### Selecting Entities
+
+You can select entities to highlight them on the canvas:
+
+- **Select single entity**: Click on an entity box
+- **Multi-select**: Hold Ctrl (Windows/Linux) or Cmd (Mac) and click entities
+- **Select all visible entities**: Click "Select All" button or press Ctrl/Cmd + A
+- **Deselect all**: Click "Deselect All" button or press Escape
+- **Click background**: Click on empty canvas (without Ctrl/Cmd) to deselect all
+
+Selected entities are highlighted with a blue 3px border. The selection count is displayed below the control buttons.
+
+**Note**: Selection respects subject area filtering - you can only select entities that are currently visible.
 
 ### File Requirements
 

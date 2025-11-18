@@ -5,11 +5,11 @@
  */
 
 import { validateModel } from './validation';
-import { setModel, clearModel, setValidationErrors, getMetadata } from './state';
+import { setModel, clearModel, setValidationErrors, getMetadata, selectAllEntities } from './state';
 import { renderModel, clearCanvas, hideCanvas } from './renderer';
 import type { ERDVModel } from './types';
-import { detectSubjectAreas } from './subjectAreas';
-import { populateSubjectAreaSelector } from './main';
+import { detectSubjectAreas, getEntitiesForSubjectArea } from './subjectAreas';
+import { populateSubjectAreaSelector, populateEntitySelectionDropdown, updateSelectionCountDisplay } from './main';
 
 // UI Elements
 let uploadZone: HTMLElement | null = null;
@@ -176,6 +176,20 @@ async function processFile(file: File): Promise<void> {
       populateSubjectAreaSelector(subjectAreas);
       console.log(`Detected ${subjectAreas.length} subject areas`);
 
+      // Select all entities by default
+      const allEntities = getEntitiesForSubjectArea(result.data, null);  // null = "All" subject area
+      const allEntityNames = allEntities.map(e => e.name);
+      selectAllEntities(allEntityNames);
+
+      // Populate entity selection dropdown and show controls
+      populateEntitySelectionDropdown();
+      updateSelectionCountDisplay();
+
+      const entitySelection = document.getElementById('entity-selection');
+      if (entitySelection) {
+        entitySelection.hidden = false;
+      }
+
       // Render the diagram
       try {
         renderModel(result.data);
@@ -316,6 +330,10 @@ function clearUploadState(): void {
   }
   if (uploadSuccess) uploadSuccess.hidden = true;
   if (uploadErrors) uploadErrors.hidden = true;
+
+  // Hide entity selection controls
+  const entitySelection = document.getElementById('entity-selection');
+  if (entitySelection) entitySelection.hidden = true;
 
   console.log('Upload state cleared');
 }
